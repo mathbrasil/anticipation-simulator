@@ -1,33 +1,76 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
+import { useState } from "react"
+
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import dataSchema from './validators'
+
+import InputComponent from './components/InputComponent'
+import ResultsComponent from './components/ResultsComponent'
+import api from "./services/api"
+
 import './App.css'
 
+interface IFormValues {
+  amount: string
+  installments: string
+  mdr: string
+}
+
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [calcResult, SetCalcResult] = useState({
+      1: 0,
+      15: 0,
+      30: 0,
+      90: 0,
+  })
+
+  const { 
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IFormValues>({
+    resolver: zodResolver(dataSchema),
+  })
+
+  const onSubmit = async (formData: IFormValues) => {
+    const {data} = await api.post("/", formData)
+    SetCalcResult(data)
+  }
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
+    <main className="App">
+      <section>
+        <div>
+          <h1>Simule sua Antecipação</h1>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <InputComponent
+              id='amount'
+              register={register}
+              error={errors?.amount}
+              placeholder='R$ 1.000,00'
+              label='Informe o valor da venda *'
+            />
+            <InputComponent
+              id='installments'
+              register={register}
+              error={errors?.installments}
+              placeholder='10'
+              label='Em quantas parcelas *'
+            />
+            <InputComponent
+              id='mdr'
+              register={register}
+              error={errors?.mdr}
+              placeholder='4'
+              label='Informe o percentual de MDR *'
+            />
+            <button type="submit">Cadastrar</button>
+          </form>
+        </div>
+        <ResultsComponent days={calcResult} />
+      </section>
+    </main>
   )
 }
 
