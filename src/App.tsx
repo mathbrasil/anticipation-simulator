@@ -1,33 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { useState } from "react"
+
+import Form from "./components/Form"
+import ResultsComponent from './components/Results'
+
+import Global from "./styles/global"
+import StyledMain from "./styles"
+
+
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [calcResult, SetCalcResult] = useState({
+    1: 0,
+    15: 0,
+    30: 0,
+    90: 0
+  })
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
+    <>
+      <Global />
+      <StyledMain className="App">
+        <section>
+          <div className="contentContainer formContainer">
+            <Form SetCalcResult={SetCalcResult} />
+          </div>
+          <div className="contentContainer resultsContainer">
+            <ResultsComponent results={calcResult} />
+          </div>
+        </section>
+      </StyledMain>
+    </>
   )
 }
 
